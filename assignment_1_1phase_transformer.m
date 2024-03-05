@@ -81,4 +81,4 @@ end
 % The 'calculate_transformer_cost' function should take into account material costs, labor, and other
 % factors to provide a total cost estimate for the transformer.
 
-In this code, I've adjusted the current calculations to reflect a single-phase transformer (`I_primary_rated` and `I_secondary_rated`) and removed the three-phase design section. The efficiency calculation is still a placeholder and should be replaced with actual efficiency calculations based on the transformer's design and losses. The function `calculate_transformer_cost` is also a placeholder and needs to be defined based on your cost model.
+%In this code, I've adjusted the current calculations to reflect a single-phase transformer (`I_primary_rated` and `I_secondary_rated`) and removed the three-phase design section. The efficiency calculation is still a placeholder and should be replaced with actual efficiency calculations based on the transformer's design and losses. The function `calculate_transformer_cost` is also a placeholder and needs to be defined based on your cost model.

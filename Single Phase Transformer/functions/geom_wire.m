@@ -8,5 +8,8 @@ function [A, d, l] = geom_wire(I, J, N, d_core)
     
     % Length of wire [m]
     l = ceil(N * pi * d_core);   
+
+    % Volume of winding [m^3]
+    V = A * l;
     
 end

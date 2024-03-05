@@ -6,12 +6,14 @@ This project involves the design of a cost-optimized three-phase YD distribution
 ## Objectives
 
 1. **High Efficiency:**
-   - Achieve >85% efficiency at 50% load, >95% at 75% load, and >92% at full load, all at unity power factor and rated voltage.
+   - >85% efficiency at 50% load,
+   - >95% efficiency at 75% load,
+   - >92% efficiency at full load, all at unity power factor and rated voltage.
 
-2. **Design Constraints**
+3. **Design Constraints**
    - The project details constraints related to cooling methods, winding current densities, core and winding materials, insulation capabilities, and geometrical considerations.
 
-3. **Cost Considerations**
+4. **Cost Considerations**
    - Includes a detailed breakdown of raw material costs for copper, aluminum, silicon steel laminations, transformer oil, and structural steel.
 
 ## Design and Analysis Process

@@ -20,7 +20,7 @@
 % clc; clear; close all;
 
 % Adds the 'functions' directory to the search path
-addpath('functions');
+addpath('functions_single_phase');
 
 
 %% Transformer Specifications

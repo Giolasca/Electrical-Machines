@@ -1,4 +1,4 @@
-function [Cost_oil, Cost_tank] = cost_oil(Vol_tot, Vol_core, Vol_w1, Vol_w2, Sup, d)
+function [Cost_oil, Cost_tank] = cost_oil(Vol_tot, Vol_core, Vol_w1, Vol_w2, Sup, d, density)
 
 % Cost contribution oil cooled transformer [€/kg]
 cost_oil = 5;
@@ -15,6 +15,6 @@ Kg_oil = Vol_oil * density_oil;
 Cost_oil = Kg_oil * cost_oil;
 
 % Cost tank [€]
-Cost_tank = Sup * d * tank_cost;
+Cost_tank = Sup * d * density * tank_cost;
 
 end

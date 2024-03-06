@@ -20,7 +20,7 @@
 % clc; clear; close all;
 
 % Adds the 'functions' directory to the search path
-addpath('functions');
+addpath('functions_single_phase');
 
 
 %% Constraints and Costants
@@ -84,8 +84,8 @@ Sn = 1100 * 10^3;   % Nominal apparent power [VA]
 %% Optimization problem
 % Definition of ranges
 B_core_range = 0.5:0.1:1.8;             % From 0.5 T to 2 T
-J_winding_range = 2.5e6:2.5e6:20e6;   % From 2.5e6 A/m^2 to 20e6 A/m^2
-K_insulation_range = 0.25:0.25:3;     % From 0.25 V to 3 V
+J_winding_range = 2.5e5:2.5e5:20e5;     % From 2.5e5 A/m^2 to 20e5 A/m^2
+K_insulation_range = 0.25:0.25:3;       % From 0.25 V to 3 V
 
 % Array of required efficiencies and corresponding load factors
 Eff_required = [85, 95, 92] / 100;    % Conversion to decimal form
@@ -105,7 +105,6 @@ for B_core = B_core_range
             for i = 1:length(Load_factors)
                 
                 ks = Vp/Vs;    % Trasformation rate
-                Sn_rated = Sn * Load_factors(i);  % Rated power [VA]
 
                 % Calculate primary and secondary current [A]
                 Ip = Sn/Vp;
@@ -171,7 +170,7 @@ for B_core = B_core_range
                 R0 = Vp^2 / Ploss_steel; 
 
                 % Magnetizing Reactance X0 [Ohm]
-                X0 = 2 * pi * f * (N1 + N2)^2 * (mu_0 * mu_steel * A_core / lenght_magnetic); 
+                X0 = 2 * pi * f * (N1)^2 * (mu_steel * A_core / lenght_magnetic); 
 
                 % Core impedance (R0 || X0) [Ohm]
                 Z0 = (R0 * 1i * X0) / (R0 + 1i * X0);
@@ -229,10 +228,10 @@ for B_core = B_core_range
                 end
 
                 % Total cost of oil and tank [€]
-                [Cost_oil, Cost_tank] = cost_oil(Vol_tank, Vol_core, Vol1_wire, Vol2_wire, Sup_tank, d_tank);
+                [Cost_oil, Cost_tank] = cost_oil(Vol_tank, Vol_core, Vol1_wire, Vol2_wire, Sup_tank, d_tank, density_steel);
 
                 % Total cost of transformer [€]
-                if (J_winding > 10e6)
+                if (J_winding > 10e5)
                     Cost_tot = Cost_steel + Cost_copper + Cost_tank + Cost_oil;
                 else
                     Cost_tot = Cost_steel + Cost_copper;
@@ -240,12 +239,19 @@ for B_core = B_core_range
 
             
                 %% Efficiency test
-            
+                
+                % Rated power [VA]
+                Sn_rated = Sn * Load_factors(i);  
+
                 % Output power [W]
                 Pout = Sn_rated;   
+
+                % Calculate primary and secondary current [A]
+                Ip_rated = Sn_rated/Vp;
+                Is_rated = Sn_rated/Vs;
             
                 % Copper losses [W]
-                Pcu = (Ip^2 * R1 + Is^2 * R2); 
+                Pcu = (Ip_rated^2 * R1 + Is_rated^2 * R2); 
 
                 % Input power [W]
                 Pin = Pout + Ploss_steel + Pcu;  
@@ -254,11 +260,26 @@ for B_core = B_core_range
                 eta = Pout / Pin; 
 
                 if eta >= Eff_required(i) && Cost_tot < min_cost
+                    R0_opt = R0;
+                    X0_opt = X0;
+                    Z0_opt = abs(Z0);
+                    R1_opt = R1;
+                    X1_opt = X1;
+                    Z1_opt = abs(Z1);
+                    R2_opt = R2*ks^2;
+                    X2_opt = X2*ks^2;
+                    Z2_opt = abs(Z2*ks^2);
+                    P_loss_steel_opt = Ploss_steel;
                     min_cost = Cost_tot;
+                    min_cu_cost = Cost_copper;
+                    min_steel_cost = Cost_steel;
+                    min_oil_cost = Cost_oil;
+                    min_tank_cost = Cost_tank;
                     best_B_core = B_core;
                     best_J_winding = J_winding;
                     best_K_insulation = K_insulation;
                     best_eta = eta;
+
                 end
             end
         end
@@ -266,5 +287,24 @@ for B_core = B_core_range
 end
 
 % Print the best results
-fprintf('Best cost: %f\n', min_cost);
-fprintf('With B_core = %.2f T, J_winding = %.2f A/m^2, K_insulation = %.2f V\n', best_B_core, best_J_winding, best_K_insulation);
+fprintf('\n');
+disp('==================================================================');
+disp('--------------------  Single Phase Transformer -------------------');
+disp('==================================================================');
+fprintf('\n');
+disp('Technical parameter');
+fprintf('V_hv = %.2f V, V_lv = %.2f V, Sn = %.2f VA, f = %.2f Hz\n', Vp, Vs, Sn, f);
+fprintf('\n');
+disp('Optimal parameter');
+fprintf('B_core = %.2f T, J_winding = %.2f A/m^2, K_insulation = %.2f V\n', best_B_core, best_J_winding, best_K_insulation);
+fprintf('\n');
+disp('Electromagnetic parameters');
+fprintf('R1 = %.5f Ohm, X1 = %.5f Ohm, Z0 = %.5f Ohm\n', R1_opt, X1_opt, Z1_opt);
+fprintf('R2 = %.5f Ohm, X2 = %.5f Ohm, Z2 = %.5f Ogm\n', R2_opt, X2_opt, Z2_opt);
+fprintf('R_0 = %.5f Ohm, X_m = %.5f Ohm, Z_m = %.5f Ohm\n', R0_opt, X0_opt, Z0_opt);
+fprintf('\n');
+disp('Costs');
+fprintf('Steel cost = %.2f €, Copper cost = %.2f € \n', min_steel_cost, min_cu_cost);
+fprintf('Oil cost = %.2f €, Tank cost = %.2f € \n', min_oil_cost, min_tank_cost);
+fprintf('Total cost: %f\n', min_cost);
+

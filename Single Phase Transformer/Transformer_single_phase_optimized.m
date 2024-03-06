@@ -17,7 +17,7 @@
 
 
 %% Initialization
-clc; clear; close all;
+% clc; clear; close all;
 
 % Adds the 'functions' directory to the search path
 addpath('functions');
@@ -66,6 +66,10 @@ switch mat
     otherwise
         disp('Wrong selection')
 end
+
+% Choose the geoemtry
+disp('Choose the geometry of the transformer: (1) Lymb Type (2) Shell Type');
+type = input('Your choice: ');
 
 
 %% Transformer development
@@ -129,17 +133,33 @@ for B_core = B_core_range
                 % Final width of the primary and secondary winding [m]
                 w1 =  width_windings(N1, d1_wire, k_thickness, h_windings); 
                 w2 =  width_windings(N2, d2_wire, k_thickness, h_windings);  
-            
-                % Height and width of the transformer [m]
+                
+                % Height of the transformer [m]
                 h_core = h_windings + 2*d_core;  
-                w_core = 2 *w1 + 2*d_core + 2*w2 + 8*d_core_wire;
 
-                % Volume of the core [m^3] with 90% fill factor and core weight [kg]
-                Vol_core = 2 * A_core * (h_core + (w_core - 2*d_core));
+                if (type == 1)
+                    % Width of the transformer [m]
+                    w_core = 2*w1 + 2*d_core + 2*w2 + 8*d_core_wire;
+
+                    % Volume of the core [m^3] with 90% fill factor and core weight [kg]
+                    Vol_core = 2 * A_core * (h_core + (w_core - 2*d_core));
+
+                    % Magnetic circuit length [m]
+                    lenght_magnetic = 2 * w_core + 2 * h_core - 4 * d_core; 
+
+                else 
+                    % Width of the transformer [m]
+                    w_core = 2*w1 + 3*d_core + 2*w2 + 8*d_core_wire;  
+
+                    % Volume of the core [m^3] with 90% fill factor and core weight [kg]
+                    Vol_core = 3*A_core*h_core + 2*A_core*(w_core - 3*d_core);
+
+                    % Magnetic circuit length [m]
+                    lenght_magnetic = 2 * w_core + 2 * h_core - 4 * d_core; 
+                end
+
+                % Weight of the core [Kg]
                 Kg_core = Vol_core * density_steel;
-    
-                % Magnetic circuit length [m]
-                lenght_magnetic = 2 * w_core + 2 * h_core - 4 * d_core; 
 
 
                 %% Resistances and Reactances of the Core
@@ -162,7 +182,13 @@ for B_core = B_core_range
                 % Resistance [Ohm]  -  Inductance [H]  -  Reactance [Ohm]
                 [R1, L1, X1] = winding(rho_cu, A1_wire, l1_wire, N1, mu_steel, f);
                 [R2, L2, X2] = winding(rho_cu, A2_wire, l2_wire, N2, mu_steel, f);
-                [L12, X12] = mutual_inductance(d_core, k_thickness, h_windings, w1, w2, N1, f);
+                
+                % Mutual inductance [H]
+                if (type == 1)
+                    X12 = 0;
+                else
+                    [L12, X12] = mutual_inductance(d_core, k_thickness, h_windings, w1, w2, N1, f);
+                end
 
                 % Impedences of primary and secondary windings [Ohm]
                 Z1 = R1 + 1i*(X1 + X12);
@@ -194,9 +220,13 @@ for B_core = B_core_range
             
                 % Total cost of metals [€]
                 [Cost_steel, Cost_copper] = cost_metals(material, Kg_core, Kg_wire1, Kg_wire2);
-
+                
                 % Total volume of transformer [m^3]
-                [Vol_tank, Sup_tank] = tank(w_core, h_core, d_core, w1, w2, k_thickness);
+                if (type == 1)
+                    [Vol_tank, Sup_tank] = tank_limb(w_core, h_core, d_core, w1, w2, k_thickness);
+                else
+                    [Vol_tank, Sup_tank] = tank_shell(w_core, h_core, d_core, w1, w2, k_thickness);
+                end
 
                 % Total cost of oil and tank [€]
                 [Cost_oil, Cost_tank] = cost_oil(Vol_tank, Vol_core, Vol1_wire, Vol2_wire, Sup_tank, d_tank);

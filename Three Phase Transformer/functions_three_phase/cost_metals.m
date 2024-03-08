@@ -14,6 +14,6 @@ Cu_cost = 20;
 Cost_Fe = Kg_core * Cost_steel;
 
 % Cost Copper [€]
-Cost_Cu = (kg_w1 + kg_w2) * Cu_cost;
+Cost_Cu = (kg_w1 + kg_w2) * Cu_cost * 3;
 
 end

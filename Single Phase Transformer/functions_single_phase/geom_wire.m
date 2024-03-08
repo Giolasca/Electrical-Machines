@@ -1,4 +1,4 @@
-function [A, d, l] = geom_wire(I, J, N, d_core)  
+function [A, d, l, V] = geom_wire(I, J, N, d_core)  
 
     % Cross-sectional area of wire [m^2]
     A = I / J;
@@ -8,5 +8,8 @@ function [A, d, l] = geom_wire(I, J, N, d_core)
     
     % Length of wire [m]
     l = ceil(N * pi * d_core);   
+
+    % Volumes of wire [m^3]
+    V = A * l;
     
 end

@@ -2,10 +2,10 @@
 %%%% ----------------    Transformer Single Phase   ------------------ %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Costo minore in assoluto per ogni test (materiale)
-% Verifica sensibilità a carichi capacitivi e induttivi
-% Risposta percentuale al voltage regulator
-% Plot e considerazioni
+% Lowest cost per test for each material
+% Sensitivity check to capacitive and inductive loads
+% Percentage response to the voltage regulator
+% Plots and considerations
 
 
 %% Initialization

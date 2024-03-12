@@ -1,17 +1,13 @@
-function [Vol, Sup] = tank(w_core, h_core, d_core, w1, w2, k)
+function [Vol, Sup] = tank(w_core, h_core, d_core, w1, w2, d)
 
 % Total transformer height [m]
 tot_height = h_core;
 
 % Total transformer lenght [m]
-tot_lenght = w_core + w1 + w2 + 4*k;
+tot_lenght = w_core + 2*w1 + 2*w2 + 6*d;
 
 % Total transformer width [m]
-if w1 > w2
-    tot_width = 2*w1 + d_core + 2*k;
-else
-    tot_width = 2*w2 + d_core + 2*k;
-end
+tot_width = 2*w1 + 2*w2 + d_core + 6*d;
 
 % Total volume of transformer [m^3]
 Vol = tot_width * tot_lenght * tot_height; 

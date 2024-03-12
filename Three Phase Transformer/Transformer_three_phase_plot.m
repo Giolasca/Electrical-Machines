@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%% ----------------    Transformer Single Phase   ------------------ %%%%
+%%%% ----------------    Transformer Three Phase   ------------------- %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Comparison plot between optimal parameters  
@@ -15,14 +15,14 @@
 
 
 %% Initialization
-%clc; clear; close all;
+clc; clear; close all;
 
 % Choose the experiment
 disp('Choose the test of interest');
-disp('1) M400_50 - Copper');
-disp('2) M400_50 - Aluminum');
-disp('3) M1000_100 - Copper');
-disp('4) M1000_100 - Aluminum');
+disp('M400_50 - Copper');
+disp('M400_50 - Aluminum');
+disp('M1000_100 - Copper');
+disp('M1000_100 - Aluminum');
 file = input('Your choice: ');
 
 switch file
@@ -65,48 +65,62 @@ for hw_fixed = hw_values
         % B_core - K_insulation
         [Bc_grid, ki_grid] = meshgrid(linspace(min(Bc_fixed), max(Bc_fixed), 50), ...
                                       linspace(min(ki_fixed), max(ki_fixed), 50));
-        Costo_grid_BK = griddata(Bc_fixed, ki_fixed, Costo_fixed, Bc_grid, ki_grid, 'cubic');
+        Costo_grid_BK = griddata(Bc_fixed, ki_fixed, Costo_fixed, Bc_grid, ki_grid, 'linear');
         if ~isempty(Costo_grid_BK) && isequal(size(Costo_grid_BK), size(Bc_grid))
             subplot(1, 3, 1);
             surf(Bc_grid, ki_grid, Costo_grid_BK);
-            xlabel('Bcore');
-            ylabel('Kinsulation');
+            xlabel('B_core');
+            ylabel('K_insulation');
             zlabel('Cost');
             title(sprintf('Surf plot - hw = %.1f (B-K)', hw_fixed));
-            rotate3d on; 
         end
 
         % B_core - J_winding
         [Bc_grid, Jw_grid] = meshgrid(linspace(min(Bc_fixed), max(Bc_fixed), 50), ...
                                       linspace(min(Jw_fixed), max(Jw_fixed), 50));
-        Costo_grid_BJ = griddata(Bc_fixed, Jw_fixed, Costo_fixed, Bc_grid, Jw_grid, 'cubic');
+        Costo_grid_BJ = griddata(Bc_fixed, Jw_fixed, Costo_fixed, Bc_grid, Jw_grid, 'linear');
         if ~isempty(Costo_grid_BJ) && isequal(size(Costo_grid_BJ), size(Bc_grid))
             subplot(1, 3, 2);
             surf(Bc_grid, Jw_grid, Costo_grid_BJ);
-            xlabel('Bcore');
-            ylabel('Jwinding');
+            xlabel('B_core');
+            ylabel('J_winding');
             zlabel('Cost');
             title(sprintf('Surf plot - hw = %.1f (B-J)', hw_fixed));
-            rotate3d on; 
         end
 
         % J_winding - K_insulation
         [Jw_grid, ki_grid] = meshgrid(linspace(min(Jw_fixed), max(Jw_fixed), 50), ...
                                       linspace(min(ki_fixed), max(ki_fixed), 50));
-        Costo_grid_JK = griddata(Jw_fixed, ki_fixed, Costo_fixed, Jw_grid, ki_grid, 'cubic');
+        Costo_grid_JK = griddata(Jw_fixed, ki_fixed, Costo_fixed, Jw_grid, ki_grid, 'linear');
         if ~isempty(Costo_grid_JK) && isequal(size(Costo_grid_JK), size(Jw_grid))
             subplot(1, 3, 3);
             surf(Jw_grid, ki_grid, Costo_grid_JK);
-            xlabel('Jwinding');
-            ylabel('Kinsulation');
+            xlabel('J_winding');
+            ylabel('K_insulation');
             zlabel('Cost');
             title(sprintf('Surf plot - hw = %.1f (J-K)', hw_fixed));
-            rotate3d on; 
         end
     end
 end
 
+hw_values = unique(hw);  % Valori unici di hw
+costo_medio_per_hw = zeros(size(hw_values));  % Inizializza per il costo medio
 
+% Ciclo sui valori unici di hw
+for i = 1:length(hw_values)
+    hw_fixed = hw_values(i);
+    % Estrai le configurazioni con hw fissato (utilizzando la tolleranza)
+    mask = abs(hw - hw_fixed) < tol;
+    Costo_fixed = Costo(mask);
+    % Calcola la media, il minimo e il massimo del costo per il valore corrente di hw
+    costo_medio_per_hw(i) = mean(Costo_fixed);
+end
 
+figure(30)
+% Crea il plot principale per il costo medio
+plot(hw_values, costo_medio_per_hw, 'o-', 'DisplayName', 'Costo Medio');
 
-
+xlabel('hw');
+ylabel('Costo');
+title('Costo in funzione di hw');
+hold off;  % Rilascia il grafico

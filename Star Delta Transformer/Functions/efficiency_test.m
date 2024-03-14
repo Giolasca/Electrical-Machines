@@ -24,7 +24,7 @@ function [performance_table] = efficiency_test(Vpp, S_n, Z_1p, Z_2p, Zm, P_steel
     XLp = Vpp^2 ./ imag(S);
 
     % Total load impedence
-    ZLp = RLp + 1i*XLp; 
+    ZLp = (RLp .* 1i.* XLp) ./ (RLp + 1i.*XLp); 
 
     % Primary current from equivalent circuit
     Zeq_power = Z_1p + ((Z_2p + ZLp) .* Zm) ./ (Zm + Z_2p + ZLp);

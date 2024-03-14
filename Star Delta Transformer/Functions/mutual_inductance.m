@@ -15,7 +15,7 @@ Rm1 = R1 + w1/2;   % Midpoint radius primary winding
 Rmg = R2 + k/2;       % Midpoint radius between windings
 R3 = R2 + k;          % Inner radius secondary winding
 R4 = R3 + w2;         % Outer radius secondary winding
-Rm2 = R3 + w2/2;   % Midpoint radius secondary winding
+Rm2 = R3 + w2/2;      % Midpoint radius secondary winding
 
 % Correction factor
 s = 0.32 * (R4 - R_c);

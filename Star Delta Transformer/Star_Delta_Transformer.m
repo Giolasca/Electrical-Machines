@@ -183,7 +183,7 @@ for B_core = B_core_range
                 [L12, X12, x] = mutual_inductance(d_core, d_core_wire, h_windings, w1, w2, N1, Sn_phase, Vp_phase, f);
 
                 % Check accetable winding reactance
-                if x > 0.3
+                if x > 0.7
                     % If it exceeds, this configuration does not meet the requirement
                     continue; % Exclude this configuration
                 end
@@ -204,7 +204,7 @@ for B_core = B_core_range
                 Z1s = Z1p/a^2;          % Impedance of primary winding referred to secondary
 
                 Z2p = R2p + 1i * X2p;   % Impedance of secondary winding referred to primary
-                Z2s = Z2p/a^2;          % Impedance of secondary winding
+                Z2s = Z2p / a^2;          % Impedance of secondary winding
 
 
                 %% Short-circuit current referred to the primary side

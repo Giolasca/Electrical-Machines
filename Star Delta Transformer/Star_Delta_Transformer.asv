@@ -176,14 +176,14 @@ for B_core = B_core_range
                 %% Resistances and Reactances of the Windings
 
                 % Resistance for primary and secondary winding [Ohm]
-                R1p = 10 * rho_wire * l1_wire / A1_wire;
-                R2s = 10* rho_wire * l2_wire / A2_wire;
+                R1p = rho_wire * l1_wire / A1_wire;
+                R2s = rho_wire * l2_wire / A2_wire;
 
                 % Overall inductance [H]
                 [L12, X12, x] = mutual_inductance(d_core, d_core_wire, h_windings, w1, w2, N1, Sn_phase, Vp_phase, f);
 
                 % Check accetable winding reactance
-                if x > 0.5
+                if x > 0.3
                     % If it exceeds, this configuration does not meet the requirement
                     continue; % Exclude this configuration
                 end
@@ -204,7 +204,7 @@ for B_core = B_core_range
                 Z1s = Z1p/a^2;          % Impedance of primary winding referred to secondary
 
                 Z2p = R2p + 1i * X2p;   % Impedance of secondary winding referred to primary
-                Z2s = Z2p/a^2;          % Impedance of secondary winding
+                Z2s = Z2p / a^2;          % Impedance of secondary winding
 
 
                 %% Short-circuit current referred to the primary side
@@ -257,27 +257,34 @@ for B_core = B_core_range
 
                     % Rated power [VA]
                     Sn_rated = Sn_phase * Load_factors(i);
-
-                    % Total output power [W]
                     Pout = Sn_rated;
                     
-                    % Close the circuit with resistive load
-                    RLp = Vp_phase^2/Pout;
+                    % %% Approach with load
+                    % % Close the circuit with resistive load
+                    % RLp = Vp_phase^2/Sn_rated;
+                    % 
+                    % % Primary current from equivalent circuit
+                    % Zeq_eff_phase = Z1p + (Z2p * Zm)/(Z2p + Zm);
+                    % 
+                    % % Equivalent current referred primary [A]
+                    % I1_eff_phase = Vp_phase/Zeq_eff_phase;
+                    % 
+                    % % Power [W]
+                    % S1_eff_phase = Vp_phase * conj(I1_eff_phase);
+                    % 
+                    % % Active input power related to the wire [W]
+                    % Pcu = real(S1_eff_phase);
+                    % 
+                    % % Input power [W]
+                    % Pin =  Pout + Ploss_steel + Pcu;
+                    % 
+                    % % Efficiency
+                    % eta(1,i) = Pout / Pin;
 
-                    % Primary current from equivalent circuit
-                    Zeq_eff_phase = Z1p + ((Z2p + RLp)*Zm)/(Zm + Z2p + RLp);
+                    %% Approach without load
                     
-                    % new
-                    V1 = Vp_phase + Is_phase * Zeq_eff_phase/a;
-
-                    % Equivalent current referred primary [A]
-                    I1_eff_phase = V1/Zeq_eff_phase;
-
-                    % Power [W]
-                    S1_eff_phase = V1 * conj(I1_eff_phase);
-
-                    % Active input power related to the wire [W]
-                    Pcu = real(S1_eff_phase);
+                    % Power losses in the windings
+                    Pcu = Ip_phase^2 * R1p + Is_phase^2 * R2s;
 
                     % Input power [W]
                     Pin =  Pout + Ploss_steel + Pcu;
@@ -288,12 +295,11 @@ for B_core = B_core_range
 
                 % If all requirements are met and if the cost has decreased, save this configuration
                 if eta(1,1) >= Eff_required(1) && ...
-                        eta(1,2) >= Eff_required(2) && ...
-                        eta(1,3) >= Eff_required(3)
+                   eta(1,2) >= Eff_required(2) && ...
+                   eta(1,3) >= Eff_required(3)
                     
-                    disp('funge yee yee')
                     % [Eff, voltage_regulation] = voltage_regulator(Zeqs, Vs_phase_tri, Sn, Ploss_steel);
-                    [Performance] = efficiency_test(Vp_phase_star, Vp_line_star, Sn, Z1p, Z2p, Zm, Ploss_steel);
+                    [Performance] = efficiency_test(Vp_phase, Sn_rated, Z1p, Z2p, Zm, Ploss_steel);
                     % [VolReg] = voltage_test(Vs_phase_tri, Ip_phase, Z1p, Z2p);
 
                     % Updating temporary arrays
@@ -303,8 +309,8 @@ for B_core = B_core_range
                     powerBest = [Ploss_steel, Pcu];
                     costsBest = [Cost_core, Cost_wire, Cost_oil, Cost_tank, Cost_tot];
 
-                    % Confs{end+1} = save_conf(paramsBest, geometryBest, electricalBest, powerBest, costsBest, Performance);
-                    Confs{end+1} = save_conf(paramsBest, geometryBest, electricalBest, powerBest, costsBest);
+                    Confs{end+1} = save_conf(paramsBest, geometryBest, electricalBest, powerBest, costsBest, Performance);
+                    % Confs{end+1} = save_conf(paramsBest, geometryBest, electricalBest, powerBest, costsBest);
                 end
             end
         end

@@ -15,15 +15,15 @@ Rm1 = R1 + w1/2;   % Midpoint radius primary winding
 Rmg = R2 + k/2;       % Midpoint radius between windings
 R3 = R2 + k;          % Inner radius secondary winding
 R4 = R3 + w2;         % Outer radius secondary winding
-Rm2 = R3 + w2/2;      % Midpoint radius secondary winding
+Rm2 = R3 + w2/2;   % Midpoint radius secondary winding
 
 % Correction factor
 s = 0.32 * (R4 - R_c);
 
 C = (Rm1*w1/3 + Rm2*w2/3 + Rmg*k + w1^2/12 - w2^2/12);
 
-% Mutual inductances of the windings [H]   % AAAAAAAAAAAAAAAA
-L12 = ((2*pi*(N1^2)*mu_0)/(h+s))*C;
+% Mutual inductances of the windings [H]   
+L12 = ((2*pi*(N1^2)*mu_0)/h)*C;
 
 % Mutual reactances for the windings [Ohm]
 X12 = 2 * pi * f * L12;

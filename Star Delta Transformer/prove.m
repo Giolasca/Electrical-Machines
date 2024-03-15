@@ -32,7 +32,7 @@ V2_prim = Ea - I2*Z2;
 SL = V2_prim * conj(I2);
 P_steel = 1000;
 
-eta = real(V2_prim) * real(I2) * PF / (real(V2_prim) * real(I2) * PF + real(I2)^2*(real(Z1 + Z2)) + P_steel);
+eta = real(V2_prim) * real(I2) * PF / (real(V2_prim) * real(I2) * PF + real(I2)^2*(real(Z1 + Z2)) + 4.382764905282990e+03);
 
 % Voltage regulator
 V1_prim = V1 + (Z1 + Z2)*(I2);

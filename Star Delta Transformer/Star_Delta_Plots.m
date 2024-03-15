@@ -116,11 +116,4 @@ for i = 1:length(hw_values)
     costo_medio_per_hw(i) = mean(Costo_fixed);
 end
 
-figure(30)
-% Crea il plot principale per il costo medio
-plot(hw_values, costo_medio_per_hw, 'o-', 'DisplayName', 'Costo Medio');
 
-xlabel('hw');
-ylabel('Costo');
-title('Costo in funzione di hw');
-hold off;  % Rilascia il grafico
